@@ -53,6 +53,34 @@ private:
     }
 };
 
+/*
+// Brute force
+class Solution {
+public:
+    bool isPalindrom(string str, int left, int right){
+        while( left < right ){
+            if(str[left] != str[right]) return false;
+
+            left++;
+            right--;
+        }
+        return true;
+    }
+    int countSubstrings(string s) {
+      int n = s.size();
+      int count = 0;
+      for(int i = 0; i < n; i++){
+        for(int j = i; j < n; j++){
+            if(isPalindrom(s, i, j)){
+                count++;
+            }
+        }
+      }
+      return count;  
+    }
+};
+
+*/
 int main() {
     Solution sol;
 
