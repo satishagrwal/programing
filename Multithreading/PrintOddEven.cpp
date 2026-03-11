@@ -13,13 +13,13 @@ void printOdd()
     {
         std::unique_lock<std::mutex> lock(m);
 
-        if(count > 20) break;
-
         cv.wait(lock, []{ return count % 2 == 1; });
+
+        if(count > 20) break;
 
         std::cout << "Odd : " << count++ << std::endl;
 
-        cv.notify_all();
+        cv.notify_one();
     }
 }
 
@@ -29,10 +29,10 @@ void printEven()
     {
         std::unique_lock<std::mutex> lock(m);
 
-        if(count > 20) break;
-
         cv.wait(lock, []{ return count % 2 == 0; });
 
+        if(count > 20) break;
+        
         std::cout << "Even : " << count++ << std::endl;
 
         cv.notify_all();
