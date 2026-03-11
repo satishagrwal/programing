@@ -3,59 +3,47 @@
 #include <mutex>
 #include <condition_variable>
 
-constexpr int MAX = 10;
-
-std::mutex mtx;
+std::mutex m;
 std::condition_variable cv;
-int number = 1;
+int count = 1;
 
-void print_odd()
+void printOdd()
 {
-    while (true)
+    while(true)
     {
-        std::unique_lock<std::mutex> lock(mtx);
+        std::unique_lock<std::mutex> lock(m);
 
-        cv.wait(lock, [] {
-            return (number % 2 == 1) || (number >= MAX);
-        });
+        if(count > 20) break;
 
-        if (number >= MAX)
-            break;
+        cv.wait(lock, []{ return count % 2 == 1; });
 
-        std::cout << "Odd number = " << number << std::endl;
-        ++number;
+        std::cout << "Odd : " << count++ << std::endl;
 
-        cv.notify_one();
+        cv.notify_all();
     }
 }
 
-void print_even()
+void printEven()
 {
-    while (true)
+    while(true)
     {
-        std::unique_lock<std::mutex> lock(mtx);
+        std::unique_lock<std::mutex> lock(m);
 
-        cv.wait(lock, [] {
-            return (number % 2 == 0) || (number >= MAX);
-        });
+        if(count > 20) break;
 
-        if (number >= MAX)
-            break;
+        cv.wait(lock, []{ return count % 2 == 0; });
 
-        std::cout << "Even number = " << number << std::endl;
-        ++number;
+        std::cout << "Even : " << count++ << std::endl;
 
-        cv.notify_one(); // We can use notify_all() also in this case we have to notify only one thread. So used notify_one() for efficiency.
+        cv.notify_all();
     }
 }
 
 int main()
 {
-    std::thread odd(print_odd);
-    std::thread even(print_even);
+    std::thread t1(printOdd);
+    std::thread t2(printEven);
 
-    odd.join();
-    even.join();
-
-    return 0;
+    t1.join();
+    t2.join();
 }
