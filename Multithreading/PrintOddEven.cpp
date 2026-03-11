@@ -9,33 +9,48 @@ int count = 1;
 
 void printOdd()
 {
-    while(true)
+    while (true)
     {
         std::unique_lock<std::mutex> lock(m);
+        // Prevents threads from sleeping when the work is already finished.
+        if (count > 20)
+        {
+            // Ensures any waiting thread wakes and exits.
+            cv.notify_all();
+            return;
+        }
 
-        cv.wait(lock, []{ return count % 2 == 1; });
+        if (count % 2 == 0)
+            cv.wait(lock);
 
-        if(count > 20) break;
-
-        std::cout << "Odd : " << count++ << std::endl;
-
-        cv.notify_one();
+        if (count <= 20 && count % 2 == 1)
+        {
+            std::cout << "Odd : " << count++ << std::endl;
+            cv.notify_all();
+        }
     }
 }
 
 void printEven()
 {
-    while(true)
+    while (true)
     {
         std::unique_lock<std::mutex> lock(m);
 
-        cv.wait(lock, []{ return count % 2 == 0; });
+        if (count > 20)
+        {
+            cv.notify_all();
+            return;
+        }
 
-        if(count > 20) break;
-        
-        std::cout << "Even : " << count++ << std::endl;
+        if (count % 2 == 1)
+            cv.wait(lock);
 
-        cv.notify_all();
+        if (count <= 20 && count % 2 == 0)
+        {
+            std::cout << "Even : " << count++ << std::endl;
+            cv.notify_all();
+        }
     }
 }
 
