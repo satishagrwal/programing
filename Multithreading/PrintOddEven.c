@@ -16,6 +16,7 @@ Even Thread: 10
 
 #include <stdio.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #define MAX_NUM 10
 
@@ -23,18 +24,22 @@ pthread_mutex_t lock;
 pthread_cond_t cond;
 int number = 1;  // start with 1
 
-void *print_odd(void *arg) {
-    while (number <= MAX_NUM) { // This while controls the lifetime of the worker thread.
+void *print_odd() {
+    while (true) { // This while controls the lifetime of the worker thread.
         pthread_mutex_lock(&lock);
 
-        while (number % 2 == 0) {  // This protects against spurious wakeups and rechecks condition after every wakeup (wait if it's even's turn)
+        while (number <= MAX_NUM && number % 2 == 0) {  // This protects against spurious wakeups and rechecks condition after every wakeup (wait if it's even's turn)
             pthread_cond_wait(&cond, &lock);
         }
-
-        if (number <= MAX_NUM) {
-            printf("Odd Thread: %d\n", number);
-            number++;
+        
+        if(number > 10) {
+          pthread_cond_signal(&cond);
+          pthread_mutex_unlock(&lock);
+          return NULL;
         }
+        
+        printf("Odd Thread: %d\n", number);
+        number++;
 
         pthread_cond_signal(&cond);  // wake up even thread
         pthread_mutex_unlock(&lock);
@@ -43,17 +48,21 @@ void *print_odd(void *arg) {
 }
 
 void *print_even(void *arg) {
-    while (number <= MAX_NUM) {
+    while (true) {
         pthread_mutex_lock(&lock);
 
-        while (number % 2 == 1) {  // wait if it's odd's turn
+        while (number <= MAX_NUM && number % 2 == 1) {  // wait if it's odd's turn
             pthread_cond_wait(&cond, &lock);
         }
 
-        if (number <= MAX_NUM) {
-            printf("Even Thread: %d\n", number);
-            number++;
+        if(number > 10) {
+          pthread_cond_signal(&cond);
+          pthread_mutex_unlock(&lock);
+          return NULL;
         }
+        
+        printf("Even Thread: %d\n", number);
+        number++;
 
         pthread_cond_signal(&cond);  // wake up odd thread
         pthread_mutex_unlock(&lock);
