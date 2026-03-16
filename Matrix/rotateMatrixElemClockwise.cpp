@@ -27,82 +27,73 @@ Output:
 14   15   16   12
 
 */
-#include <bits/stdc++.h> 
-using namespace std;  
 
-void rotateMatrixElemClockwise(int n,int m, int mat[4][4]) 
-{ 
-    int row = 0, col = 0; 
-    int prev, curr; 
-    int lastRow= n;
-    int lastCol= m;
-  
-    while (row < lastRow && col < lastCol) 
-    {  
-        if (row + 1 == lastRow || col + 1 == lastCol)  break;   
+#include <iostream>
+#include <vector>
 
-        prev = mat[row + 1][col]; 
-      
-        // For the first row which is in bounds
-        for (int i = col; i < lastCol; i++) 
-        { 
-            curr = mat[row][i]; 
-            mat[row][i] = prev; 
-            prev = curr; 
-        } 
-        row++; 
-      
-        // For the last column which is in bounds
-        for (int i = row; i < lastRow; i++) 
-        { 
-            curr = mat[i][lastCol-1]; 
-            mat[i][lastCol-1] = prev; 
-            prev = curr; 
-        } 
-        lastCol--;
-      
-        // For the last row which is in bounds
-        if (row < lastRow) 
-        { 
-            for (int i = lastCol-1; i >= col; i--) 
-            { 
-                curr = mat[lastRow-1][i]; 
-                mat[lastRow-1][i] = prev; 
-                prev = curr; 
-            } 
-        } 
-        lastRow--;
-      
-        // For the first row which is in bounds
-        if (col < lastCol) 
-        { 
-            for (int i = lastRow-1; i >= row; i--) 
-            { 
-                curr = mat[i][col]; 
-                mat[i][col] = prev; 
-                prev = curr; 
-            } 
-        } 
-        col++; 
-    } 
- 
-    for (int i=0; i<4; i++) 
-    { 
-        for (int j=0; j<4; j++) 
-          cout << mat[i][j] << " "; 
-        cout << "\n"; 
-    } 
-} 
+using namespace std;
 
+void rotateBoundary(vector<vector<int>>& mat)
+{
+    int n = mat.size();
+    int m = mat[0].size();
 
-int main() 
-{ 
-    int a[4][4] = { {1,  2,  3,  4}, 
-			              {5,  6,  7,  8}, 
-			              {9,  10, 11, 12}, 
-			              {13, 14, 15, 16}
-                  }; 
+    int prev = mat[1][0];
 
-	  rotateMatrixElemClockwise(4,4,a); 
-    return 0; 
-} 
+    // top row
+    for(int j=0;j<m;j++)
+    {
+        int curr = mat[0][j];
+        mat[0][j] = prev;
+        prev = curr;
+    }
+
+    // right column
+    for(int i=1;i<n;i++)
+    {
+        int curr = mat[i][m-1];
+        mat[i][m-1] = prev;
+        prev = curr;
+    }
+
+    // bottom row
+    for(int j=m-2;j>=0;j--)
+    {
+        int curr = mat[n-1][j];
+        mat[n-1][j] = prev;
+        prev = curr;
+    }
+
+    // left column
+    for(int i=n-2;i>=0;i--)
+    {
+        int curr = mat[i][0];
+        mat[i][0] = prev;
+        prev = curr;
+    }
+}
+
+void printMatrix(vector<vector<int>>& mat)
+{
+    for(auto &row : mat)
+    {
+        for(int v : row)
+            cout << v << " ";
+
+        cout << endl;
+    }
+}
+
+int main()
+{
+    vector<vector<int>> mat =
+    {
+        {1,2,3},
+        {4,5,6},
+        {7,8,9}
+    };
+
+    rotateBoundary(mat);
+
+    printMatrix(mat);
+}
