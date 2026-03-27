@@ -14,7 +14,7 @@ class objectPool
    public:
    
     objectPool(size_t size, size_t max) : maxSize(max){
-        for(int i=0; i < size; i++)
+        for(size_t i=0; i < size; i++)
         {
             pool.push_back(new T());
         }
@@ -25,7 +25,13 @@ class objectPool
             delete obj;
         }   
     }
-    
+ 
+    ObjectPool(const ObjectPool&) = delete;
+    ObjectPool& operator=(const ObjectPool&) = delete;
+
+    ObjectPool(ObjectPool&&) = delete;
+    ObjectPool& operator=(ObjectPool&&) = delete;
+
     T* acquire(){
         
         std::lock_guard<std::mutex> lock(mtx);
@@ -75,8 +81,8 @@ int main(){
     connection* cP2 = connPool.acquire();
     cP2->process();
     
-    connPool.release();
-    connPool.release();
+    connPool.release(cP1);
+    connPool.release(cP2);
     
     return 0;
 }
