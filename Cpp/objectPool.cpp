@@ -75,8 +75,8 @@ int main(){
     connection* cP2 = connPool.acquire();
     cP2->process();
     
-    pool.release();
-    pool.release();
+    connPool.release();
+    connPool.release();
     
     return 0;
 }
