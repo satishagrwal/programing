@@ -12,35 +12,32 @@ struct ListNode {
 class Solution {
 public:
     ListNode* removeNthFromEnd(ListNode* head, int n) {
-        if (!head) return nullptr;
+        // Create a dummy node that points to head
+        // This handles cases like removing the head or a 1-node list
+        ListNode* dummy = new ListNode(0, head);
+        ListNode* slow = dummy;
+        ListNode* fast = head;
 
-        ListNode *fast = head;
-        ListNode *slow = head;
-
-        // 1. Advance fast pointer n steps
+        // 1. Move fast pointer n steps ahead
         for (int i = 0; i < n; i++) {
-            // If n is valid (n <= length), fast will not be null inside the loop
             fast = fast->next;
         }
 
-        // 2. EDGE CASE: If fast is nullptr, it means n == length of list. We need to remove head.
-        if (fast == nullptr) {
-            ListNode* newHead = head->next;
-            delete head; 
-            return newHead;
-        }
-
-        // 3. Move both until fast reaches the LAST node (fast->next is null)
-        while (fast->next) {
+        // 2. Move both until fast reaches the very end (nullptr)
+        // Now, slow will be at the node PRIOR to the one we want to delete
+        while (fast != nullptr) {
             slow = slow->next;
             fast = fast->next;
         }
 
-        // 4. Slow is now exactly one node BEFORE the target
-        ListNode *temp = slow->next;
+        // 3. Delete the node
+        ListNode* nodeToDelete = slow->next;
         slow->next = slow->next->next;
-        delete temp;
+        delete nodeToDelete; // Clean up memory
 
-        return head;   
+        // Return the actual head (which might have changed)
+        ListNode* newHead = dummy->next;
+        delete dummy; 
+        return newHead;
     }
 };
