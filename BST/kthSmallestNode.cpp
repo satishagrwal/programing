@@ -26,24 +26,22 @@ Node* insert(Node* root, int x)
 
  
 // Function to find k'th largest element in BST
-void printKthSmallest(Node* root, int k, int &count)
+void printKthSmallest(Node* root, int &k)
 {
-    if (root == nullptr || count >= k) {
+    if (root == nullptr ) {
         return;
     }
 
-   printKthSmallest(root->left, k, count);
-   
-    if (count < k) {
-        count++;
-        if (count == k) {
+   printKthSmallest(root->left, k);
+        k--;
+        if (k == 0) {
             std::cout << root->data << std::endl;
             return;
         }
-    };
+
    
-   if (count < k) {
-     printKthSmallest(root->right, k, count);
+   if (k > 0) {
+     printKthSmallest(root->right, k);
    }
 }
  
@@ -51,13 +49,12 @@ void printKthSmallest(Node* root, int k, int &count)
 int main()
 {
     Node* root = NULL;
-    int keys[] = { 5, 3, 6, 2, 4, 1 };
-    int counter = 0;
+    int keys[] = {13, 14, 22, 25, 23, 32, 26,28,40};
     for (int x : keys)
         root = insert(root, x);
  
-    int k = 5;
-    printKthSmallest(root, k, counter);
+    int k = 3;
+    printKthSmallest(root, k);
     return 0;
 }
 
