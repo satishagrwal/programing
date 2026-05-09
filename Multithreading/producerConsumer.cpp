@@ -16,6 +16,12 @@ void producer()
     {
         std::unique_lock<std::mutex> lock(m);
 
+        /*
+        while (!(buffer.size() < MAX_SIZE)) 
+        {
+          cv.wait(lock);
+        }
+        */
         cv.wait(lock, []{ return buffer.size() < MAX_SIZE; });
 
         buffer.push(i);
