@@ -37,6 +37,12 @@ void consumer()
     {
         std::unique_lock<std::mutex> lock(m);
 
+        /*
+        while(buffer.empty())
+        {
+              cv.wait(lock);
+        }
+        */
         cv.wait(lock, []{ return !buffer.empty(); });
 
         int item = buffer.front();
